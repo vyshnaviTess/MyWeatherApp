@@ -32,6 +32,10 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#00aaff',
   },
+  loadingIndicator: {
+    marginTop: 20,
+    alignSelf: 'center',
+  },
 });
 
 export default styles;

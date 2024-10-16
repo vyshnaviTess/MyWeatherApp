@@ -6,6 +6,6 @@ export type RootStackParamList = {
 };
 
 export type RootTabParamList = {
-  HomeScreen: { city: string };  // Home screen with city param
+  HomeScreen: { city: string, latitude: number, longitude: number };  // Home screen with city param
   Search: undefined;  // Search screen
 };

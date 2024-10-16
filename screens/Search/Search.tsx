@@ -7,13 +7,8 @@ import Header from '../../components/Header';
 import styles from './Search.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { RootStackParamList } from '../../Utils/RootStackParamList';
+import { RootTabParamList } from '../../Utils/RootStackParamList';
 
-// Define the type for the RootTabParamList
-type RootTabParamList = {
-  HomeScreen: { city: string };
-  Search: undefined;
-};
 
 // Define the type for the screen's navigation props
 type SearchProps = BottomTabScreenProps<RootTabParamList, 'Search'>;
@@ -22,11 +17,14 @@ type SearchProps = BottomTabScreenProps<RootTabParamList, 'Search'>;
 interface City {
   id: string;
   place_name: string;
+  latitude: number; // Add latitude property
+  longitude: number; 
 }
 
 const Search: React.FC<SearchProps> = ({ navigation }) => {
   const [city, setCity] = useState<string>('');
   const [cities, setCities] = useState<City[]>([]);
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null); 
 
   const fetchCities = (text: string) => {
     setCity(text);
@@ -36,6 +34,8 @@ const Search: React.FC<SearchProps> = ({ navigation }) => {
         setCities(data.features.slice(0, 10).map((feature: any) => ({
           id: feature.id,
           place_name: feature.place_name,
+          latitude: feature.geometry.coordinates[1], // Latitude
+          longitude: feature.geometry.coordinates[0],
         })));
       })
       .catch((error) => {
@@ -43,24 +43,30 @@ const Search: React.FC<SearchProps> = ({ navigation }) => {
       });
   };
 
-  const btnClick = async () => {
-    try {
+    const btnClick = async () => {
+      const selectedCity = cities.find(c => c.place_name === city);
+      if (!selectedCity) return console.error('City not found');
+    
       await AsyncStorage.setItem('newCity', city);
-      navigation.navigate('HomeScreen', { city: city });
-    } catch (error) {
-      console.error('Error saving city:', error);
-    }
-  };
+      navigation.navigate('HomeScreen', { 
+        city: selectedCity.place_name, 
+        latitude: selectedCity.latitude, 
+        longitude: selectedCity.longitude 
+      });
+    };
 
-  const listClick = async (cityName: string) => {
-    try {
+    const listClick = async (cityName: string) => {
+      const selectedCity = cities.find(c => c.place_name === cityName);
+      if (!selectedCity) return console.error('City not found');
+    
       setCity(cityName);
       await AsyncStorage.setItem('newCity', cityName);
-      navigation.navigate('HomeScreen', { city: cityName });
-    } catch (error) {
-      console.error('Error saving city:', error);
-    }
-  };
+      navigation.navigate('HomeScreen', {
+        city: selectedCity.place_name,
+        latitude: selectedCity.latitude,
+        longitude: selectedCity.longitude,
+      });
+    };    
 
   return (
     <View style={styles.view}>
