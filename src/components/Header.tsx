@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = (props) => {
       }}
       style={styles.header}
     >
-      <Title style={{ color: "white" }}>
+      <Title >
         {props.name}
       </Title>
     </Appbar.Header>

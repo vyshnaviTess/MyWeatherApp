@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { TextInput, Button, Card } from 'react-native-paper';
 import { View, Text, FlatList } from 'react-native';
 
-import { ACCESS_TOKEN } from '../../Utils/constants';
-import Header from '../../components/Header';
+
 import styles from './Search.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { RootTabParamList } from '../../Utils/RootStackParamList';
+import { ACCESS_TOKEN } from '../../Utils/constants';
+import Header from '../../components/Header';
 
 
 // Define the type for the screen's navigation props

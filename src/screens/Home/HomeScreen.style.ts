@@ -5,8 +5,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   placeView: {
+    height: "35%",
     alignItems: "center",
     marginBottom: 15,
+    justifyContent: "center",
   },
   title: {
     color: '#6200ee',
@@ -20,6 +22,13 @@ const styles = StyleSheet.create({
   card: {
     margin: 5,
     padding: 12,
+  },
+  tempInfo: {
+    paddingTop: 10,
+    height: "15%",
+    width: "20%",
+    color: "rgb(4, 92, 136)",
+    fontSize: 35,
   },
   infoTitle: {
     color: "rgb(4, 92, 136)",

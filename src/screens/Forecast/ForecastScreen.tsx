@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { Card, Title } from 'react-native-paper';
-import Geolocation from 'react-native-geolocation-service';
+
 import styles from './ForecastScreen.style';
-import Header from '../../components/Header';
-import { WEATHER_API_KEY } from '../../Utils/constants';
+
+
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../Utils/RootStackParamList';
+import Header from '../../components/Header';
+import { WEATHER_API_KEY } from '../../Utils/constants';
+
 
 type ForecastScreenRouteProp = RouteProp<RootStackParamList, 'Forecast'>;
 interface ForecastData {
