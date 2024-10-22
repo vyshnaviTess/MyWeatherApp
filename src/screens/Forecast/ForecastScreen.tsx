@@ -1,7 +1,7 @@
 // screens/Forecast/ForecastScreen.tsx
 
 import React from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Image } from 'react-native';
 import { Card, Title } from 'react-native-paper';
 
 import styles from './ForecastScreen.style';
@@ -36,20 +36,31 @@ const ForecastScreen: React.FC<{ route: ForecastScreenRouteProp }> = ({ route })
 
   return (
     <View style={styles.container}>
-      {/* <Header name="5-Day Forecast" /> */}
-      <FlatList
-        data={forecast}
-        keyExtractor={(item) => item.dt_txt}
-        renderItem={({ item }) => (
-          <Card style={styles.card}>
-            <Title style={styles.date}>{new Date(item.dt_txt).toLocaleDateString()}</Title>
-            <Text style={styles.temp}>Temperature: {Math.round(Number(item.main.temp))}°C</Text>
-            <Text style={styles.desc}>Weather: {item.weather[0].description}</Text>
-            <Text style={styles.humidity}>Humidity: {item.main.humidity} %</Text>
-          </Card>
-        )}
-      />
-    </View>
+    {/* <Header name="5-Day Forecast" /> */}
+    <FlatList
+      style={styles.weatherByCity}
+      data={forecast}
+      keyExtractor={(item) => item.dt_txt}
+      renderItem={({ item }) => (
+        <Card style={styles.card}>
+          <View style={styles.cardContent}>
+            <View style={styles.textContainer}>
+              <Title style={styles.date}>{new Date(item.dt_txt).toLocaleDateString()}</Title>
+              <Text style={styles.temp}>Temperature: {Math.round(Number(item.main.temp))}°C</Text>
+              <Text style={styles.desc}>Weather: {item.weather[0].description}</Text>
+              <Text style={styles.humidity}>Humidity: {item.main.humidity}%</Text>
+            </View>
+            <Image
+              style={styles.image}
+              source={{
+                uri: "https://openweathermap.org/img/w/" + item.weather[0].icon + ".png",
+              }}
+            />
+          </View>
+        </Card>
+      )}
+    />
+  </View>
   );
 };
 
