@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card, Title, Text } from 'react-native-paper';
-import { View, Image, ScrollView, Alert } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './HomeScreen.style';

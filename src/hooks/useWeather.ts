@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
-import { getCachedCity, cacheCity } from './weatherCache';
+import { getCachedCity, saveCity } from './weatherCache';
 import { getWeatherByCity, getWeatherByCoordinates } from '../api/weatherServices';
 
 
@@ -18,7 +18,7 @@ interface WeatherInfo {
   wind: string;
 }
 
-const useWeather = (city?: string, latitude?: number, longitude?: number) => {
+const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
   const [info, setInfo] = useState<WeatherInfo>({
     name: 'Loading...',
     temp: 'Loading...',
@@ -43,7 +43,7 @@ const useWeather = (city?: string, latitude?: number, longitude?: number) => {
   const getWeatherByCityName = async (cityName: string) => {
     let cachedCity = await getCachedCity();
     if (!cachedCity || cachedCity !== cityName) {
-      cacheCity(cityName);
+      saveCity(cityName);
     }
     
     try {
