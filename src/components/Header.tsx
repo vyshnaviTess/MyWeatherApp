@@ -11,8 +11,8 @@ const Header: React.FC<HeaderProps> = (props) => {
     <Appbar.Header
       theme={{
         colors: {
-          primary: "#6200ee",
-        }
+          primary: '#6200ee',
+        },
       }}
       style={styles.header}
     >
@@ -21,6 +21,6 @@ const Header: React.FC<HeaderProps> = (props) => {
       </Title>
     </Appbar.Header>
   );
-}
+};
 
 export default Header;

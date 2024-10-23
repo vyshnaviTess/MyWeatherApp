@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { getCachedCity, saveCity } from './weatherCache';
 import { getWeatherByCity, getWeatherByCoordinates } from '../api/weatherServices';
-
 
 interface WeatherInfo {
   name: string;
@@ -32,20 +31,11 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
     wind: 'Loading...',
   });
 
-  useEffect(() => {
-    if (city) {
-      getWeatherByCityName(city);
-    } else {
-      getWeatherByCurrentLocation();
-    }
-  }, [city]);
-
   const getWeatherByCityName = async (cityName: string) => {
     let cachedCity = await getCachedCity();
     if (!cachedCity || cachedCity !== cityName) {
       saveCity(cityName);
     }
-    
     try {
       const results = await getWeatherByCity(cityName);
       if (results.cod === 200) {
@@ -69,20 +59,7 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
     }
   };
 
-  const getWeatherByCurrentLocation = async () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        fetchWeatherByCoordinates(latitude, longitude);
-      },
-      (error) => {
-        Alert.alert('Error', 'Error getting location: ' + error.message);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  };
-
-  const fetchWeatherByCoordinates = async (lat: number, lon: number) => {
+  const fetchWeatherByCoordinates = useCallback(async (lat: number, lon: number) => {
     try {
       const results = await getWeatherByCoordinates(lat, lon);
       if (results.cod === 200) {
@@ -104,7 +81,28 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
     } catch (err) {
       Alert.alert('Error', (err as Error).message || 'An unexpected error occurred');
     }
-  };
+  }, []);
+
+  const getWeatherByCurrentLocation = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchWeatherByCoordinates(latitude, longitude);
+      },
+      (error) => {
+        Alert.alert('Error', 'Error getting location: ' + error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  }, [fetchWeatherByCoordinates]);
+
+  useEffect(() => {
+    if (city) {
+      getWeatherByCityName(city);
+    } else {
+      getWeatherByCurrentLocation();
+    }
+  }, [city, getWeatherByCurrentLocation]);
 
   return { info };
 };

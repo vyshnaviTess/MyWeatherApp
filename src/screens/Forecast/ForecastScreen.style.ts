@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   humidity: {
     fontSize: 14,
-    color: '#666'
+    color: '#666',
   },
   image: {
     width: 100,

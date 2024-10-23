@@ -22,7 +22,6 @@ interface HomeScreenProps {
 const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
   const { city, latitude, longitude } = route.params; // Optionally use city from route params
   const { info } = useWeather(city, latitude, longitude);
-  
   return (
     <View style={styles.view}>
       <ScrollView>
@@ -32,18 +31,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route, navigation }) => {
           <Image
             style={styles.image}
             source={{
-              uri: "https://openweathermap.org/img/w/" + info.icon + ".png",
+              uri: 'https://openweathermap.org/img/w/' + info.icon + '.png',
             }}
           />
           <Title style={styles.tempInfo}>{Math.round(Number(info.temp))}°C</Title>
           <Title style={styles.desc}>{info.desc}</Title>
           <Text>feels like: {Math.round(Number(info.feels_like))}°C</Text>
         </View>
-
         <Card elevation={3} style={styles.card}>
           <Title style={styles.infoTitle}>min: {Math.round(Number(info.temp_min))}°C max: {Math.round(Number(info.temp_max))}°C</Title>
         </Card>
-        <Card elevation={3} style={styles.card}> 
+        <Card elevation={3} style={styles.card}>
           <Title style={styles.infoTitle}>Humidity: {info.humidity}%</Title>
         </Card>
         <Card elevation={3} style={styles.card}>

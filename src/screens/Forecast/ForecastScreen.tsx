@@ -53,7 +53,7 @@ const ForecastScreen: React.FC<{ route: ForecastScreenRouteProp }> = ({ route })
             <Image
               style={styles.image}
               source={{
-                uri: "https://openweathermap.org/img/w/" + item.weather[0].icon + ".png",
+                uri: 'https://openweathermap.org/img/w/' + item.weather[0].icon + '.png',
               }}
             />
           </View>

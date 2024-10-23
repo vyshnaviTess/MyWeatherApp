@@ -11,6 +11,9 @@ const styles = StyleSheet.create({
         margin: 2,
         padding: 12,
     },
+    text: {
+        color: 'white',
+      },
 });
 
 export default styles;

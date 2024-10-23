@@ -46,7 +46,7 @@ const Search: React.FC<SearchProps> = ({ navigation }) => {
       latitude: selectedCity.latitude,
       longitude: selectedCity.longitude,
     });
-  };   
+  };
 
   return (
     <View style={styles.view}>
@@ -64,7 +64,7 @@ const Search: React.FC<SearchProps> = ({ navigation }) => {
         style={styles.btn}
         onPress={handleSave}
       >
-        <Text style={{ color: 'white' }}>Save Changes</Text>
+      <Text style={styles.text}>Save Changes</Text>
       </Button>
 
       <FlatList
