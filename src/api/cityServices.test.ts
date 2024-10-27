@@ -1,4 +1,3 @@
-
 import { fetchCities } from './cityService';
 import { ACCESS_TOKEN } from '../Utils/constants';
 
