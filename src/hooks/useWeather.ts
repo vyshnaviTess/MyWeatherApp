@@ -55,6 +55,7 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
         Alert.alert('Error', 'Could not fetch weather data.');
       }
     } catch (err) {
+      console.log("Error", (err as Error).message);
       Alert.alert('Error', (err as Error).message || 'An unexpected error occurred');
     }
   };
@@ -79,6 +80,7 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
         Alert.alert('Error', 'Could not fetch weather data.');
       }
     } catch (err) {
+      console.log("ErrorfetchWeatherByCoordinates", (err as Error).message);
       Alert.alert('Error', (err as Error).message || 'An unexpected error occurred');
     }
   }, []);
@@ -90,6 +92,7 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
         fetchWeatherByCoordinates(latitude, longitude);
       },
       (error) => {
+        console.log("Error getting location", error.message);
         Alert.alert('Error', 'Error getting location: ' + error.message);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
