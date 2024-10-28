@@ -6,7 +6,6 @@ import styles from './Search.style';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {RootTabParamList} from '../../Utils/RootStackParamList';
 
-import Header from '../../components/Header';
 import {useCitySearch} from '../../hooks/useCitySearch';
 import {saveCity} from '../../hooks/weatherCache';
 
@@ -16,7 +15,7 @@ type SearchProps = BottomTabScreenProps<RootTabParamList, 'Search'>;
 const Search: React.FC<SearchProps> = ({navigation}) => {
   const {city, setCity, cities, searchCity} = useCitySearch();
 
-  const handleSave = async () => {
+  const handleSave = async (city: string) => {
     const selectedCity = cities.find(c => c.place_name === city);
     if (!selectedCity) {
       console.error('City not found');
@@ -49,7 +48,6 @@ const Search: React.FC<SearchProps> = ({navigation}) => {
 
   return (
     <View style={styles.view}>
-      <Header name="Search Screen" />
       <TextInput
         label="City Name to search..."
         testID="cityNameInput"
@@ -63,7 +61,7 @@ const Search: React.FC<SearchProps> = ({navigation}) => {
         testID="saveButton"
         theme={{colors: {primary: '#00aaff'}}}
         style={styles.btn}
-        onPress={handleSave}>
+        onPress={() => handleSave(city)}>
         <Text style={styles.text}>Save Changes</Text>
       </Button>
 

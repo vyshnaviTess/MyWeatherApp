@@ -1,148 +1,122 @@
 import React from 'react';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {useCitySearch} from '../../hooks/useCitySearch';
 import Search from './Search';
+import {useCitySearch} from '../../hooks/useCitySearch';
+import {saveCity} from '../../hooks/weatherCache';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {RouteProp} from '@react-navigation/native';
+import {RootTabParamList} from '../../Utils/RootStackParamList';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 jest.mock('../../hooks/useCitySearch');
-jest.mock('../../hooks/weatherCache', () => ({
-  saveCity: jest.fn(),
-}));
+jest.mock('../../hooks/weatherCache');
 
-const mockNavigate = jest.fn();
-const mockNavigation = {
-  navigate: mockNavigate,
-  addListener: jest.fn(),
-  canGoBack: jest.fn(),
-  goBack: jest.fn(),
-  setParams: jest.fn(),
-};
-
-const mockRoute = {};
-
-const mockUseCitySearch = useCitySearch as jest.MockedFunction<
-  typeof useCitySearch
+type MockNavigation = Partial<
+  BottomTabNavigationProp<RootTabParamList, 'Search'>
 >;
+type MockRoute = Partial<RouteProp<RootTabParamList, 'Search'>>;
 
-describe.skip('Search Component', () => {
+describe.skip('Search Screen', () => {
+  const mockNavigation: MockNavigation = {navigate: jest.fn()};
+  const mockRoute: MockRoute = {}; // mock route object
+  const mockSetCity = jest.fn();
+  const mockSearchCity = jest.fn();
   beforeEach(() => {
-    mockUseCitySearch.mockReturnValue({
-      city: '',
-      setCity: jest.fn(),
+    (useCitySearch as jest.Mock).mockReturnValue({
+      city: 'Test City',
+      setCity: mockSetCity,
       cities: [
-        {
-          id: '1',
-          place_name: 'New York',
-          latitude: 40.7128,
-          longitude: -74.006,
-        },
-        {
-          id: '2',
-          place_name: 'Los Angeles',
-          latitude: 34.0522,
-          longitude: -118.2437,
-        },
+        {id: '1', place_name: 'Test City', latitude: 1.234, longitude: 5.678},
       ],
-      searchCity: jest.fn(),
-      error: null,
+      searchCity: mockSearchCity,
     });
   });
 
-  const setup = () => {
-    return render(
+  it('renders the city list correctly', async () => {
+    const {findByTestId, debug} = render(
       <SafeAreaProvider>
-        <NavigationContainer>
-          <Search navigation={mockNavigation as any} route={mockRoute as any} />
-        </NavigationContainer>
+        <Search navigation={mockNavigation as any} route={mockRoute as any} />
       </SafeAreaProvider>,
     );
-  };
 
-  it('renders correctly with initial state', async () => {
-    const {getByTestId} = setup();
+    // debug(); // Inspect the rendered output
 
-    // Use waitFor to wait for the input to appear
-    await waitFor(() => {
-      const inputElement = getByTestId('cityNameInput');
-      expect(inputElement).toBeTruthy();
+    await waitFor(async () => {
+      debug();
+      const cityItem = await findByTestId('cityItem-Test City');
+      expect(cityItem).toBeTruthy();
     });
   });
 
-  it('calls searchCity when text is entered', async () => {
-    const {getByTestId} = setup();
+  it('updates city name on input change', () => {
+    const {getByTestId} = render(
+      <Search navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+    const cityNameInput = getByTestId('cityNameInput');
 
-    const input = await waitFor(() => getByTestId('cityNameInput'));
-    fireEvent.changeText(input, 'San Francisco');
-
-    // Ensure searchCity was called
-    await waitFor(() => {
-      expect(mockUseCitySearch().searchCity).toHaveBeenCalledWith(
-        'San Francisco',
-      );
-    });
+    fireEvent.changeText(cityNameInput, 'New City');
+    expect(mockSearchCity).toHaveBeenCalledWith('New City');
   });
 
-  it('navigates to HomeScreen when save button is pressed', async () => {
-    // Set up mock return value to indicate city is selected for saving
-    mockUseCitySearch.mockReturnValueOnce({
-      city: 'New York',
-      setCity: jest.fn(),
-      cities: [
-        {
-          id: '1',
-          place_name: 'New York',
-          latitude: 40.7128,
-          longitude: -74.006,
-        },
-      ],
-      searchCity: jest.fn(),
-      error: null,
-    });
+  it('saves city and navigates to HomeScreen when save button is pressed', async () => {
+    (saveCity as jest.Mock).mockResolvedValueOnce(undefined); // Explicitly set resolved value
 
-    const {getByTestId} = setup();
-    const saveButton = await waitFor(() => getByTestId('saveButton'));
+    const {getByTestId} = render(
+      <Search navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+    const saveButton = getByTestId('saveButton');
+
     fireEvent.press(saveButton);
 
-    // Wait for navigation
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('HomeScreen', {
-        city: 'New York',
-        latitude: 40.7128,
-        longitude: -74.006,
+      expect(saveCity).toHaveBeenCalledWith('Test City');
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen', {
+        city: 'Test City',
+        latitude: 1.234,
+        longitude: 5.678,
       });
     });
   });
 
-  it('navigates to HomeScreen when a city is tapped', async () => {
-    const {getByTestId} = setup();
+  it('selects city from the list and navigates to HomeScreen', async () => {
+    (saveCity as jest.Mock).mockResolvedValueOnce(undefined); // Explicitly set resolved value
 
-    const cityItem = await waitFor(() => getByTestId('cityItem-New York'));
+    const {getByTestId} = render(
+      <Search navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+    const cityItem = getByTestId('cityItem-Test City');
+
     fireEvent.press(cityItem);
 
-    // Wait for navigation
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('HomeScreen', {
-        city: 'New York',
-        latitude: 40.7128,
-        longitude: -74.006,
+      expect(mockSetCity).toHaveBeenCalledWith('Test City');
+      expect(saveCity).toHaveBeenCalledWith('Test City');
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen', {
+        city: 'Test City',
+        latitude: 1.234,
+        longitude: 5.678,
       });
     });
   });
 
-  it('displays error message if searchCity fails', async () => {
-    mockUseCitySearch.mockReturnValueOnce({
-      city: '',
-      setCity: jest.fn(),
+  it('logs error when city is not found on save', async () => {
+    console.error = jest.fn();
+    (useCitySearch as jest.Mock).mockReturnValueOnce({
+      city: 'Unknown City',
+      setCity: mockSetCity,
       cities: [],
-      searchCity: jest.fn(),
-      error: 'Error fetching cities',
+      searchCity: mockSearchCity,
     });
 
-    const {getByText} = setup();
+    const {getByTestId} = render(
+      <Search navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+    const saveButton = getByTestId('saveButton');
+
+    fireEvent.press(saveButton);
 
     await waitFor(() => {
-      expect(getByText('Error fetching cities')).toBeTruthy();
+      expect(console.error).toHaveBeenCalledWith('City not found');
     });
   });
 });
