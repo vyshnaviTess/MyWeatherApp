@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { fetchWeatherForecast } from '../api/weatherServices';
 
-import { WEATHER_API_KEY } from '../Utils/constants';
+import { BASE_URL, WEATHER_API_KEY } from '../Utils/constants';
 
 interface ForecastData {
   dt_txt: string;
@@ -22,7 +22,7 @@ export const useForecast = (city: string) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWeatherForecast(city, WEATHER_API_KEY)
+    fetchWeatherForecast(city)
       .then(setForecast)
       .catch((err) =>
         setError(err instanceof Error ? err.message : 'An unknown error occurred.')

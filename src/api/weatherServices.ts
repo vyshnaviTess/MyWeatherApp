@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { WEATHER_API_KEY } from '../Utils/constants';
-
-const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+import { BASE_URL, WEATHER_API_KEY } from '../Utils/constants';
 
 const fetchWeatherData = async (url: string) => {
   try {
