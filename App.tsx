@@ -1,10 +1,10 @@
 import React from 'react';
-import { useClearAsyncStorage } from './src/hooks/useClearAsyncStorage';
+import {useClearAsyncStorage} from './src/hooks/useClearAsyncStorage';
 import AppNavigator from './src/navigations/AppNavigator';
 
 const App: React.FC = () => {
   // Clear AsyncStorage on App start
-  useClearAsyncStorage();
+  // useClearAsyncStorage();
 
   return <AppNavigator />;
 };

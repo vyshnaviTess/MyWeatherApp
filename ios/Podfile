@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'MyNewProject' do
+target 'MyWeatherApp' do
   config = use_native_modules!
 
   # Include react-native-permissions 
@@ -24,7 +24,7 @@ target 'MyNewProject' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'MyNewProjectTests' do
+  target 'MyWeatherAppTests' do
     inherit! :complete
     # Pods for testing
   end
