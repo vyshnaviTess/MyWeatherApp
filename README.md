@@ -48,6 +48,7 @@ npx react-native run-ios
 yarn ios
 ```
 ### For iOS pods
+```bash
 cd ios
 
 pod install
