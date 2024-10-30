@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
-import { getCachedCity, saveCity } from './weatherCache';
+import { getCachedCity, getCachedWeatherData, saveCity, saveWeatherData } from './weatherCache';
 import { getWeatherByCity, getWeatherByCoordinates } from '../api/weatherServices';
 
 interface WeatherInfo {
@@ -32,14 +32,10 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
   });
 
   const getWeatherByCityName = async (cityName: string) => {
-    let cachedCity = await getCachedCity();
-    if (!cachedCity || cachedCity !== cityName) {
-      saveCity(cityName);
-    }
     try {
       const results = await getWeatherByCity(cityName);
       if (results.cod === 200) {
-        setInfo({
+        const weatherData = {
           name: results.name,
           temp: results.main.temp,
           temp_min: results.main.temp_min,
@@ -50,13 +46,22 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
           icon: results.weather[0].icon,
           pressure: results.main.pressure,
           wind: results.wind.speed,
-        });
+        };
+        setInfo(weatherData);
+        saveCity(cityName); // Save the city to cache
+        saveWeatherData(weatherData); // Save the fetched data to cache
       } else {
-        Alert.alert('Error', 'Could not fetch weather data.');
+        throw new Error('Could not fetch weather data.');
       }
     } catch (err) {
-      console.log("Error", (err as Error).message);
-      Alert.alert('Error', (err as Error).message || 'An unexpected error occurred');
+      console.log("Network error: Displaying cached data.", (err as Error).message);
+      const cachedData = await getCachedWeatherData();
+      if (cachedData) {
+        setInfo(cachedData as WeatherInfo);
+        Alert.alert('Warning', 'Displaying cached weather data due to network error.');
+      } else {
+        Alert.alert('Error', 'Could not fetch data and no cached data available.');
+      }
     }
   };
 
@@ -64,7 +69,7 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
     try {
       const results = await getWeatherByCoordinates(lat, lon);
       if (results.cod === 200) {
-        setInfo({
+        const weatherData = {
           name: results.name,
           temp: results.main.temp,
           temp_min: results.main.temp_min,
@@ -75,13 +80,21 @@ const useWeather = (city?: string, _latitude?: number, _longitude?: number) => {
           icon: results.weather[0].icon,
           pressure: results.main.pressure,
           wind: results.wind.speed,
-        });
+        };
+        setInfo(weatherData);
+        saveWeatherData(weatherData); // Cache the successful fetch data
       } else {
-        Alert.alert('Error', 'Could not fetch weather data.');
+        throw new Error('Could not fetch weather data.');
       }
     } catch (err) {
-      console.log("ErrorfetchWeatherByCoordinates", (err as Error).message);
-      Alert.alert('Error', (err as Error).message || 'An unexpected error occurred');
+      console.log("Network error: Displaying cached data.", (err as Error).message);
+      const cachedData = await getCachedWeatherData();
+      if (cachedData) {
+        setInfo(cachedData as WeatherInfo);
+        Alert.alert('Warning', 'Displaying cached weather data due to network error.');
+      } else {
+        Alert.alert('Error', 'Could not fetch data and no cached data available.');
+      }
     }
   }, []);
 
